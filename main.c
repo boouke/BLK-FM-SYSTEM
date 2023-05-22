@@ -8,14 +8,15 @@
 #define CHOOSE_MSG "Choose if you want to create, delete or rename a file! You can also now create directories using the directory input!\n"
 #define CREATE_MSG "You have selected creation mode! Type in the file name (.txt) and adress starting at the root folder that you want to create!\n"
 #define DIR_CREATE_MSG "You have selected directory creation mode! Type in the dir's adress with it's name starting at the root folder.\n"
-#define DELETE_MSG "You have selected deleting mode! Type in the files current adress starting at the root folder and it will be deleted!\n1"
+#define DELETE_MSG "You have selected deleting mode! Type in the files current adress starting at the root folder and it will be deleted!\n"
+#define SUCCESS_MSG "Operation succesful!\n"
 #define RENAME_MSG "You have selected renaming mode! Type in the files current adress starting at the root folder and name and a new name for it!\n"
-#define ERR_LEN "UNKNOWN ERROR(0x1) Please contact our support team ar github.com/boouke and provide the memory adress\n"
+#define ERR_LEN "UNKNOWN ERROR(0x1) Please contact our support team ar github.com/boouke and provide the memory adress"
 #define ERR_FILE_CREATE "FILE CREATE ERROR(0x2) Please restart the program, and try again. If you encounter the same problem contact our support team at github.com/boouke\n"
 
 void choose(int* int_operation);
 void create(void);
-void rename(void);
+void name(void);
 void dir_create(void);
 void file_delete(void);
 
@@ -36,7 +37,7 @@ int main(){
         return 0;
     }
     else if(int_operation == 4){
-        rename();
+        name();
         return 0;
     }
     return 0;
@@ -65,26 +66,45 @@ void choose(int* int_operation){
         free(buffer);
         return;
     }
+    else if(strcmp(operation, "rename") == 0){
+        *int_operation = 4;
+        free(buffer);
+        return;
+    }
     free(buffer);
 }
 void create(void) {
     int len = 50;
     char* file_name = (char*)malloc((len + 1) * sizeof(char));
     printf("%s", CREATE_MSG);
-    while (scanf("%s", file_name) != 1) {
+    while (scanf("%s", file_name) != 1){
         printf("%s at %p", ERR_LEN, file_name);
     }
     FILE* file = fopen(file_name, "w");
-    if (file == NULL) {
+    if (file == NULL){
         printf("%s", ERR_FILE_CREATE);
-    } else {
+    } else{
+        printf("%s", SUCCESS_MSG);
         fclose(file);
     }
     free(file_name);
 }
 
 void file_delete(void){
+    int len = 50;
+    char* file_name = (char*)malloc((len + 1) * sizeof(char));
     printf("%s", DELETE_MSG);
+    while(scanf("%s", file_name) != 1){
+        printf("%s at %p", ERR_LEN, file_name);
+    }
+    int rem = remove(file_name);
+    if(rem == 0){
+        printf("%s", SUCCESS_MSG);
+    }
+    else{
+        printf("%s at %p", ERR_LEN, file_name);
+    }
+    free(file_name);
 }
 void dir_create(void) {
     int len = 50;
@@ -95,15 +115,31 @@ void dir_create(void) {
     }
     int creating = mkdir(dir_name, S_IRWXU);
     if(creating == 0){
-        printf("Directory created succesfully!\n");
+        printf("%s", SUCCESS_MSG);
         return;
     }
     else{
         printf("%s", ERR_LEN);
         return;
     }
+    free(dir_name);
 }
 
-void rename(void){
+void name(void){
+    int len = 50;
+    char* file_name = (char*)malloc((len + 1) * sizeof(char));
+    char* new_file_name = (char*)malloc((len + 1) * sizeof(char));
     printf("%s", RENAME_MSG);
+    while(scanf("%s", file_name) != 1){
+        printf("%s", ERR_LEN);
+    }
+    while(scanf("%s", new_file_name) != 1){
+        printf("%s", ERR_LEN);
+    }
+    if(rename(file_name,new_file_name) == 0){
+        printf("%s", ERR_LEN);
+    }
+    else{
+        printf("%s", SUCCESS_MSG);
+    }
 }
