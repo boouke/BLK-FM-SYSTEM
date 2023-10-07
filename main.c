@@ -145,8 +145,6 @@ void dir_create(void) {
     free(dir_name);
 }
 
-
-
 void name(void){
     int len = 50;
     char* file_name = (char*)malloc((len + 1) * sizeof(char));
